@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-
-import '../../../components/product_card.dart';
+import 'section_title.dart';
 import '../../../models/product.dart';
+import 'package:flutter/material.dart';
 import '../../details/details_screen.dart';
 import '../../products/products_screen.dart';
-import 'section_title.dart';
+import '../../../components/product_card.dart';
 
 class PopularProducts extends StatelessWidget {
   const PopularProducts({super.key});

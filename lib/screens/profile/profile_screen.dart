@@ -2,7 +2,9 @@ import 'components/profile_pic.dart';
 import 'components/profile_menu.dart';
 import '../../components/log_out.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../components/alert_widgets.dart';
+import '../../components/theme_notifier.dart';
 
 class ProfileScreen extends StatelessWidget {
   final String? userImage;
@@ -13,6 +15,9 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false); // Access the ThemeNotifier
+    bool value = themeNotifier.isDarkMode;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -41,9 +46,11 @@ class ProfileScreen extends StatelessWidget {
             ),
             /// Settings
             ProfileMenu(
-              text: "Options",
+              text: "Dark Mode",
               icon: "assets/icons/Settings.svg",
-              press: () {},
+              press: () {
+                themeNotifier.setTheme(!value); // Change theme when toggled
+              },
             ),
             /// Help Center
             ProfileMenu(

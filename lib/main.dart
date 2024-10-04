@@ -3,6 +3,8 @@ import 'dart:async';
 import 'routes.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
+import 'components/theme_notifier.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'screens/splash/splash_screen.dart';
 import 'components/config_easy_loader.dart';
@@ -21,7 +23,12 @@ void main() async {
       /// Set theme for EasyLoader indicator
       ConfigEasyLoader.darkTheme();
 
-      runApp(const MyApp());
+      runApp(
+        ChangeNotifierProvider(
+          create: (_) => ThemeNotifier(),
+          child: const MyApp(),
+        ),
+      );
     },
     (error, stack) {
       debugPrint("runZonedGuarded: Caught error in my root zone. $error");
@@ -52,6 +59,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context); // Listen to the theme changes
+
     return MaterialApp(
       builder: (context, child) {
         child = EasyLoading.init()(context, child);
@@ -63,6 +72,8 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'TECHSHOP',
       theme: AppTheme.lightTheme(context),
+      darkTheme: AppTheme.darkTheme(context),
+      themeMode: themeNotifier.currentTheme, // Apply the theme mode
       initialRoute: userUid != 'unknown_uid' ? InitScreen.routeName : SplashScreen.routeName,
       routes: routes,
     );
