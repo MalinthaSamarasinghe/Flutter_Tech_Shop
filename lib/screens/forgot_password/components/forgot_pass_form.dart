@@ -6,6 +6,7 @@ import '../../../components/no_account_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../components/custom_snack_bar.dart';
 import '../../../components/custom_surfix_icon.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class ForgotPassForm extends StatefulWidget {
@@ -52,6 +53,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
               if (_formKey.currentState!.validate()) {
                 KeyboardUtil.hideKeyboard(context);
                 if(await InternetConnectionChecker().hasConnection){
+                  EasyLoading.show(status: "Please Wait", dismissOnTap: false);
                   resetPassword(context);
                 } else {
                   Future.delayed(const Duration(milliseconds: 100), () {
@@ -78,6 +80,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: email ?? '',
       );
+      EasyLoading.dismiss();
       Future.delayed(const Duration(milliseconds: 100), () {
         CustomSnackBar().showSnackBar(
           context,
@@ -90,6 +93,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
         MaterialPageRoute(builder: (context) => const SignInScreen()), (route) => route.isFirst,
       );
     } on FirebaseAuthException catch (e) {
+      EasyLoading.dismiss();
       Future.delayed(const Duration(milliseconds: 100), () {
         CustomSnackBar().showSnackBar(
           context,

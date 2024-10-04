@@ -41,6 +41,10 @@ dependencies:
   mime: ^1.0.6
   # provides an easy way to add shimmer effect in Flutter project
   shimmer: ^3.0.0
+  # RFC4122 (v1, v4, v5, v6, v7, v8) UUID Generator and Parser for Dart
+  uuid: ^4.5.1
+  # A clean and lightweight loading widget for Flutter, Easy to use without context
+  flutter_easyloading: ^3.0.5
 
 dev_dependencies:
   flutter_test:

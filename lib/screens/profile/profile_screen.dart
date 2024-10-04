@@ -6,9 +6,10 @@ import '../../components/alert_widgets.dart';
 
 class ProfileScreen extends StatelessWidget {
   final String? userImage;
+  final String? userUid;
   static String routeName = "/profile";
 
-  const ProfileScreen({super.key, this.userImage});
+  const ProfileScreen({super.key, this.userImage, this.userUid});
 
   @override
   Widget build(BuildContext context) {
@@ -24,28 +25,33 @@ class ProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
           children: [
-            ProfilePic(userImage: userImage),
+            ProfilePic(userImage: userImage, userUid: userUid ?? ''),
             const SizedBox(height: 20),
+            /// My Account
             ProfileMenu(
               text: "My Account",
               icon: "assets/icons/User Icon.svg",
               press: () => {},
             ),
+            /// Notifications
             ProfileMenu(
               text: "Notifications",
               icon: "assets/icons/Bell.svg",
               press: () {},
             ),
+            /// Settings
             ProfileMenu(
               text: "Options",
               icon: "assets/icons/Settings.svg",
               press: () {},
             ),
+            /// Help Center
             ProfileMenu(
               text: "Get Help",
               icon: "assets/icons/Question mark.svg",
               press: () {},
             ),
+            /// Log Out
             ProfileMenu(
               text: "Exit",
               icon: "assets/icons/Log out.svg",

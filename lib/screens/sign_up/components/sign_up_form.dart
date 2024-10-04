@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../components/custom_snack_bar.dart';
 import '../../../components/custom_surfix_icon.dart';
 import '../../login_success/login_success_screen.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class SignUpForm extends StatefulWidget {
@@ -102,6 +103,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 _formKey.currentState!.save();
                 KeyboardUtil.hideKeyboard(context);
                 if(await InternetConnectionChecker().hasConnection){
+                  EasyLoading.show(status: "Please Wait", dismissOnTap: false);
                   userRegisterWithEmailAndPassword(context);
                 } else {
                   Future.delayed(const Duration(milliseconds: 100), () {
@@ -127,11 +129,13 @@ class _SignUpFormState extends State<SignUpForm> {
         email: email ?? '',
         password: password ?? '',
       );
+      EasyLoading.dismiss();
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const LoginSuccessScreen(successMessage: "Account created successfully!")), (route) => route.isFirst,
       );
     } on FirebaseAuthException catch (e) {
+      EasyLoading.dismiss();
       if (e.code == 'email-already-in-use') {
         Future.delayed(const Duration(milliseconds: 100), () {
           CustomSnackBar().showSnackBar(

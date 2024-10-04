@@ -20,6 +20,7 @@ class InitScreen extends StatefulWidget {
 class _InitScreenState extends State<InitScreen> {
   int currentSelectedIndex = 0;
   String? userImage;
+  String? userUid;
   List pages = [];
 
   void updateCurrentIndex(int index) {
@@ -32,13 +33,15 @@ class _InitScreenState extends State<InitScreen> {
   void initState() {
     FirebaseAuth.instance.currentUser?.reload();
     userImage = FirebaseAuth.instance.currentUser?.photoURL;
+    userUid = FirebaseAuth.instance.currentUser?.uid;
+    debugPrint('Init Screen --> Current user uid: $userUid');
     debugPrint('Init Screen --> Current user Image: $userImage');
     super.initState();
     pages = [
       const HomeScreen(),
       const FavoriteScreen(),
       const Center(child: Text("Coming Soon!")),
-      ProfileScreen(userImage: userImage)
+      ProfileScreen(userImage: userImage, userUid: userUid)
     ];
   }
 

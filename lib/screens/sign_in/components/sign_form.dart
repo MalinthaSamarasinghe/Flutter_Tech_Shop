@@ -6,6 +6,7 @@ import '../../../components/custom_snack_bar.dart';
 import '../../../components/custom_surfix_icon.dart';
 import '../../login_success/login_success_screen.dart';
 import '../../forgot_password/forgot_password_screen.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class SignForm extends StatefulWidget {
@@ -107,6 +108,7 @@ class _SignFormState extends State<SignForm> {
                 // if all are valid then go to success screen
                 KeyboardUtil.hideKeyboard(context);
                 if(await InternetConnectionChecker().hasConnection){
+                  EasyLoading.show(status: "Please Wait", dismissOnTap: false);
                   userLoginWithEmailAndPassword(context);
                 } else {
                   Future.delayed(const Duration(milliseconds: 100), () {
@@ -132,11 +134,13 @@ class _SignFormState extends State<SignForm> {
         email: email ?? '',
         password: password ?? '',
       );
+      EasyLoading.dismiss();
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const LoginSuccessScreen(successMessage: "Login Success!")), (route) => route.isFirst,
       );
     } on FirebaseAuthException catch (e) {
+      EasyLoading.dismiss();
       if (e.code == 'invalid-credential') {
         Future.delayed(const Duration(milliseconds: 100), () {
           CustomSnackBar().showSnackBar(

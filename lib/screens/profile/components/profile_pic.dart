@@ -1,22 +1,29 @@
 import 'dart:io';
 import 'package:mime/mime.dart';
+import 'package:uuid/uuid.dart';
 import '../../../constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import '../../../components/exception.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../components/circle_button.dart';
 import '../../../components/alert_widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../components/shimmer_builder.dart';
 import 'package:image_cropper/image_cropper.dart';
 import '../../../components/custom_snack_bar.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:insta_image_viewer/insta_image_viewer.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class ProfilePic extends StatefulWidget {
+  final String userUid;
   final String? userImage;
 
-  const ProfilePic({super.key, required this.userImage});
+  const ProfilePic({super.key, required this.userImage, required this.userUid});
 
   @override
   State<ProfilePic> createState() => _ProfilePicState();
@@ -27,6 +34,14 @@ class _ProfilePicState extends State<ProfilePic> {
   dynamic _pickImageError;
   CroppedFile? _croppedFile;
   bool alreadyHasImage = false;
+
+  @override
+  void initState() {
+    if(widget.userImage != null){
+      alreadyHasImage = true;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +92,7 @@ class _ProfilePicState extends State<ProfilePic> {
                       ),
                       child: Center(
                         child: SvgPicture.asset(
-                          "assets/svg/camera.svg",
+                          "assets/icons/camera.svg",
                           width: 20,
                           height: 20,
                         ),
@@ -130,7 +145,6 @@ class _ProfilePicState extends State<ProfilePic> {
               ),
               const SizedBox(height: 13),
               Text(
-                // Translate the message
                 _croppedFile != null || alreadyHasImage ? "Change Customer Image" : "Add Customer Image",
                 style: const TextStyle(fontSize: 16),
                 overflow: TextOverflow.ellipsis,
@@ -156,9 +170,8 @@ class _ProfilePicState extends State<ProfilePic> {
                 children: [
                   picker.supportsImageSource(ImageSource.camera)
                       ? CircleButton(
-                          icon: "assets/svg/camera.svg",
+                          icon: "assets/icons/camera.svg",
                           iconColor: kColorDarkBlue,
-                          // Translate the message
                           title: "Camera",
                           onTap: (){
                             Navigator.pop(context);
@@ -169,9 +182,8 @@ class _ProfilePicState extends State<ProfilePic> {
                   SizedBox(width: picker.supportsImageSource(ImageSource.camera) && picker.supportsImageSource(ImageSource.gallery) ? 53 : 0),
                   picker.supportsImageSource(ImageSource.gallery)
                       ? CircleButton(
-                          icon: "assets/svg/gallery.svg",
+                          icon: "assets/icons/gallery.svg",
                           iconColor: kColorDarkBlue,
-                          // Translate the message
                           title: "Gallery",
                           onTap: (){
                             Navigator.pop(context);
@@ -184,14 +196,12 @@ class _ProfilePicState extends State<ProfilePic> {
                       : 0),
                   _croppedFile != null || alreadyHasImage
                       ? CircleButton(
-                          icon: "assets/svg/bin.svg",
+                          icon: "assets/icons/bin.svg",
                           iconColor: kColorDarkBlue,
-                          // Translate the message
                           title: "Remove",
                           onTap: (){
                             Alerts.getInstance().twoButtonAlert(
                               context,
-                              // Translate the message
                               title: "Confirm Deletion",
                               msg: "Are you sure you want to delete this image?",
                               btnNoText: "Cancel",
@@ -268,7 +278,7 @@ class _ProfilePicState extends State<ProfilePic> {
           placeholder: (context, url) => shimmerLoader(),
           errorWidget: (context, url, error) {
             return SvgPicture.asset(
-              "assets/svg/default_customer.svg",
+              "assets/icons/default_customer.svg",
               fit: BoxFit.cover,
             );
           },
@@ -291,11 +301,9 @@ class _ProfilePicState extends State<ProfilePic> {
                   ? Image.file(
                       File(_croppedFile!.path),
                       errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                        // Translate the message
                         return _buildErrorImage(context, "This image type is not supported!");
                       },
                     )
-                  // Translate the message
                   : _buildErrorImage(context, "This type is not an image!")),
         ),
       );
@@ -318,7 +326,7 @@ class _ProfilePicState extends State<ProfilePic> {
     }
     return Center(
       child: SvgPicture.asset(
-        "assets/svg/camera.svg",
+        "assets/icons/camera.svg",
         width: 60,
         height: 60,
       ),
@@ -336,8 +344,7 @@ class _ProfilePicState extends State<ProfilePic> {
         compressQuality: 100,
         uiSettings: [
           AndroidUiSettings(
-            // Translate the message
-            toolbarTitle: "Storemate",
+            toolbarTitle: "Tech Shop",
             toolbarColor: kTextColor,
             statusBarColor: kTextColor,
             toolbarWidgetColor: kColorWhite,
@@ -365,12 +372,10 @@ class _ProfilePicState extends State<ProfilePic> {
             ],
           ),
           IOSUiSettings(
-            // Translate the message
-            title: "Storemate",
+            title: "Tech Shop",
             aspectRatioLockDimensionSwapEnabled: false,
             aspectRatioLockEnabled: false,
             aspectRatioPickerButtonHidden: true,
-            // Translate the message
             cancelButtonTitle: "Cancel",
             doneButtonTitle: "Done",
             // hidesNavigationBar: false,
@@ -402,11 +407,134 @@ class _ProfilePicState extends State<ProfilePic> {
           _croppedFile = croppedImage;
           alreadyHasImage = false;
         });
+        _uploadImage(context);
       } else {
         throw Exception("ImageCropper Error");
       }
     } catch (e) {
       debugPrint("ImageCropper Error --> $e");
+    }
+  }
+
+  Future<void> _uploadImage(context) async {
+    const uuid = Uuid();
+    final timeStamp = DateTime.now().millisecondsSinceEpoch;
+
+    /// Unique filename using getApplicationDocumentsDirectory and timestamp
+    final fileName = 'image_${uuid.v4()}_$timeStamp.jpg';
+    final file = File(_croppedFile!.path);
+
+    /// Create the file metadata
+    final metadata = SettableMetadata(contentType: "image/jpg");
+    if(await InternetConnectionChecker().hasConnection){
+      /// Create a reference to the Firebase Storage bucket
+      /// Upload file and metadata to the path
+      final uploadImage = FirebaseStorage.instance.ref('images/${widget.userUid}/$fileName').putFile(file, metadata);
+      uploadImage.snapshotEvents.listen(
+        (TaskSnapshot taskSnapshot) {
+          switch (taskSnapshot.state) {
+            case TaskState.running:
+              double progress = 0.0;
+              setState(() {
+                progress = 100.0 * (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
+              });
+              EasyLoading.show(status: 'Image Uploading: ${progress.toInt()}%', dismissOnTap: false);
+              break;
+            case TaskState.paused:
+              EasyLoading.dismiss();
+              FocusManager.instance.primaryFocus?.unfocus();
+              Future.delayed(const Duration(milliseconds: 100), () {
+                CustomSnackBar().showSnackBar(
+                  context,
+                  msg: "Image Upload is paused!",
+                  snackBarTypes: SnackBarTypes.alert,
+                );
+              });
+              break;
+            case TaskState.canceled:
+              EasyLoading.dismiss();
+              FocusManager.instance.primaryFocus?.unfocus();
+              Future.delayed(const Duration(milliseconds: 100), () {
+                CustomSnackBar().showSnackBar(
+                  context,
+                  msg: 'Image Upload is canceled!',
+                  snackBarTypes: SnackBarTypes.alert,
+                );
+              });
+              break;
+            case TaskState.error:
+              EasyLoading.dismiss();
+              FocusManager.instance.primaryFocus?.unfocus();
+              Future.delayed(const Duration(milliseconds: 100), () {
+                CustomSnackBar().showSnackBar(
+                  context,
+                  msg: 'An unknown exception occurred in Image Upload!',
+                  snackBarTypes: SnackBarTypes.error,
+                );
+              });
+              break;
+            case TaskState.success:
+              EasyLoading.dismiss();
+              FocusManager.instance.primaryFocus?.unfocus();
+              taskSnapshot.ref.getDownloadURL().then(
+                (downloadUrl) {
+                  debugPrint("FireBase --> Cloud Storage Upload successful, download URL: $downloadUrl");
+                  EasyLoading.show(status: "Please Wait", dismissOnTap: false);
+                  updateUserImage(context, downloadUrl);
+                },
+                onError: (e) {
+                  EasyLoading.dismiss();
+                  debugPrint("FireBase --> taskSnapshot.ref.getDownloadURL() CloudStorageFailure --> ${e.code}");
+                  Future.delayed(const Duration(milliseconds: 100), () {
+                    CustomSnackBar().showSnackBar(
+                      context,
+                      msg: CloudStorageFailure.fromCode(e.code).message,
+                      snackBarTypes: SnackBarTypes.error,
+                    );
+                  });
+                  throw CloudStorageFailure.fromCode(e.code);
+                },
+              );
+              break;
+          }
+        },
+        onError: (e) {
+          EasyLoading.dismiss();
+          debugPrint("FireBase --> uploadImage.snapshotEvents.listen CloudStorageFailure --> ${e.code}");
+          Future.delayed(const Duration(milliseconds: 100), () {
+            CustomSnackBar().showSnackBar(
+              context,
+              msg: CloudStorageFailure.fromCode(e.code).message,
+              snackBarTypes: SnackBarTypes.error,
+            );
+          });
+          throw CloudStorageFailure.fromCode(e.code);
+        },
+      );
+    } else {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        CustomSnackBar().showSnackBar(
+          context,
+          msg: 'No internet connection! your image not uploaded!',
+          snackBarTypes: SnackBarTypes.error,
+        );
+      });
+    }
+  }
+
+  Future<void> updateUserImage(context, String url) async {
+    try {
+      await FirebaseAuth.instance.currentUser?.updatePhotoURL(url);
+      EasyLoading.dismiss();
+    } on FirebaseAuthException catch (e) {
+      EasyLoading.dismiss();
+      Future.delayed(const Duration(milliseconds: 100), () {
+        CustomSnackBar().showSnackBar(
+          context,
+          msg: e.code,
+          snackBarTypes: SnackBarTypes.error,
+        );
+      });
     }
   }
 }
