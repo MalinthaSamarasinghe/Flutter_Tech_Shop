@@ -4,10 +4,13 @@ const kSecondaryColor = Color(0xFF000000);
 const kTextColor = Colors.black;
 const kShadowColor = Color(0x19000000);
 const kColorWhite = Color(0xffffffff);
+const kColorFieldBorder = Color(0xFFD8D8D8);
 const kPrimaryColor = Color(0xFF054791);
+const kColorDarkBlue = Color(0xFF006DAF);
+const kColorLightBlue = Color(0xFF00BCE7);
+const kColorAddButton = Color(0xFFC6E9FF);
 const kColorRed = Color(0xffFF0000);
 const kColorGreen = Color(0xFF3ED409);
-
 const kAnimationDuration = Duration(milliseconds: 200);
 
 const headingStyle = TextStyle(

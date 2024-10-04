@@ -54,6 +54,7 @@ class SignUpScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

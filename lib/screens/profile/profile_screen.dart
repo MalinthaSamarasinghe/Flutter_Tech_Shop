@@ -2,22 +2,29 @@ import 'components/profile_pic.dart';
 import 'components/profile_menu.dart';
 import '../../components/log_out.dart';
 import 'package:flutter/material.dart';
+import '../../components/alert_widgets.dart';
 
 class ProfileScreen extends StatelessWidget {
+  final String? userImage;
   static String routeName = "/profile";
 
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, this.userImage});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        title: Text(
+          "Profile",
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
           children: [
-            const ProfilePic(),
+            ProfilePic(userImage: userImage),
             const SizedBox(height: 20),
             ProfileMenu(
               text: "My Account",
@@ -43,41 +50,19 @@ class ProfileScreen extends StatelessWidget {
               text: "Exit",
               icon: "assets/icons/Log out.svg",
               press: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                    title: const Text('Log out'),
-                    content: const Text("Are you sure you want to log out of your account?"),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.black),
-                            color: Colors.white,
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                          child: const Text("Cancel", style: TextStyle(color: Colors.black)),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          await Logout().logout(context);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.red,
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                          child: const Text("Confirm", style: TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                    ],
-                  ),
+                Alerts.getInstance().twoButtonAlert(
+                  context,
+                  // Translate the message
+                  title: "Log out",
+                  msg: "Are you sure you want to log out of your account?",
+                  btnNoText: "Cancel",
+                  btnYesText: "Confirm",
+                  functionNo:() {
+                    Navigator.of(context).pop();
+                  },
+                  functionYes:() async {
+                    await Logout().logout(context);
+                  },
                 );
               },
             ),

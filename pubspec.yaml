@@ -35,11 +35,34 @@ dependencies:
   firebase_storage: ^12.3.2
   # Flutter plugin for Firebase Database, a cloud-hosted NoSQL database with realtime data syncing across Android and iOS clients, and offline access.
   firebase_database: ^11.1.4
+  # A simple widget for full screen with swipe to dismiss, pinch & zoom.
+  insta_image_viewer: ^1.0.4
+  # Utilities for handling media (MIME) types, including determining a type from a file extension and file contents.
+  mime: ^1.0.6
+  # provides an easy way to add shimmer effect in Flutter project
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
+  remove_alpha_ios: true
+
+flutter_native_splash:
+  background_image: "assets/images/splash.png"
+
+  android_12:
+    image: "assets/images/splash_icon.png"
+    color: "#ffffff"
+    icon_background_color: "#ffffff"
 
 flutter:
   uses-material-design: true

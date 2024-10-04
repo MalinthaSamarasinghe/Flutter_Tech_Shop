@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tech_shop/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,6 +19,8 @@ class InitScreen extends StatefulWidget {
 
 class _InitScreenState extends State<InitScreen> {
   int currentSelectedIndex = 0;
+  String? userImage;
+  List pages = [];
 
   void updateCurrentIndex(int index) {
     setState(() {
@@ -25,12 +28,19 @@ class _InitScreenState extends State<InitScreen> {
     });
   }
 
-  final pages = [
-    const HomeScreen(),
-    const FavoriteScreen(),
-    const Center(child: Text("Coming Soon!")),
-    const ProfileScreen()
-  ];
+  @override
+  void initState() {
+    FirebaseAuth.instance.currentUser?.reload();
+    userImage = FirebaseAuth.instance.currentUser?.photoURL;
+    debugPrint('Init Screen --> Current user Image: $userImage');
+    super.initState();
+    pages = [
+      const HomeScreen(),
+      const FavoriteScreen(),
+      const Center(child: Text("Coming Soon!")),
+      ProfileScreen(userImage: userImage)
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {

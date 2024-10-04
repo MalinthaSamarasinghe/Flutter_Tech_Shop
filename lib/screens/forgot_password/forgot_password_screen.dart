@@ -33,6 +33,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                 SizedBox(height: 32),
                 /// Forgot Password Form
                 ForgotPassForm(),
+                SizedBox(height: 20),
               ],
             ),
           ),
