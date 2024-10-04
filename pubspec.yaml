@@ -1,0 +1,77 @@
+name: tech_shop
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Default icons asset for Cupertino widgets based on Apple styled icons
+  cupertino_icons: ^1.0.2
+  # An SVG rendering and widget library for Flutter, which allows painting and displaying Scalable Vector Graphics 1.1 files.
+  flutter_svg: ^2.0.9
+  # A wrapper around InheritedWidget to make them easier to use and more reusable.
+  provider: ^6.1.1
+  # Flutter plugin for selecting images from the Android and iOS image library, and taking new pictures with the camera.
+  image_picker: ^1.0.7
+  # A Flutter plugin for Android, iOS and Web supports cropping images
+  image_cropper: ^8.0.2
+  # Customize Flutter's default white native splash screen with background color and splash image.
+  flutter_native_splash: ^2.4.0
+  # Flutter library to load and cache network images. Can also be used with placeholder and error widgets.
+  cached_network_image: ^3.4.1
+  # A pure Dart library that checks for internet by opening a socket to a list of specified addresses, each with individual port and timeout.
+  internet_connection_checker: ^1.0.0+1
+  # Flutter plugin for Firebase Core, enabling connecting to multiple Firebase apps.
+  firebase_core: ^3.6.0
+  # Flutter plugin for Firebase Auth, enabling authentication using passwords, phone numbers and identity providers like Google, Facebook and Twitter.
+  firebase_auth: ^5.3.1
+  # Flutter plugin for Firebase Cloud Storage, a powerful, simple, and cost-effective object storage service for Android and iOS.
+  firebase_storage: ^12.3.2
+  # Flutter plugin for Firebase Database, a cloud-hosted NoSQL database with realtime data syncing across Android and iOS clients, and offline access.
+  firebase_database: ^11.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  fonts:
+    - family: Muli
+      fonts:
+        - asset: assets/fonts/muli/Muli.ttf
+          weight: 400
+        - asset: assets/fonts/muli/Muli-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/muli/Muli-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/muli/Muli-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/muli/Muli-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/muli/Muli-Italic.ttf
+          style: italic
+        - asset: assets/fonts/muli/Muli-Light.ttf
+          weight: 300
+        - asset: assets/fonts/muli/Muli-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/muli/Muli-Semi-BoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/muli/Muli-SemiBold.ttf
+          weight: 600
