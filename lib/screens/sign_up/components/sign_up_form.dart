@@ -102,7 +102,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 _formKey.currentState!.save();
                 KeyboardUtil.hideKeyboard(context);
                 if(await InternetConnectionChecker().hasConnection){
-                  userSignUpWithEmailAndPassword(context);
+                  userRegisterWithEmailAndPassword(context);
                 } else {
                   Future.delayed(const Duration(milliseconds: 100), () {
                     CustomSnackBar().showSnackBar(
@@ -121,7 +121,7 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  Future<void> userSignUpWithEmailAndPassword(context) async {
+  Future<void> userRegisterWithEmailAndPassword(context) async {
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email ?? '',

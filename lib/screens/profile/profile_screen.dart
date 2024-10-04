@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-
-import 'components/profile_menu.dart';
 import 'components/profile_pic.dart';
+import 'components/profile_menu.dart';
+import '../../components/log_out.dart';
+import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
   static String routeName = "/profile";
@@ -42,7 +42,44 @@ class ProfileScreen extends StatelessWidget {
             ProfileMenu(
               text: "Exit",
               icon: "assets/icons/Log out.svg",
-              press: () {},
+              press: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Log out'),
+                    content: const Text("Are you sure you want to log out of your account?"),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.black),
+                            color: Colors.white,
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          child: const Text("Cancel", style: TextStyle(color: Colors.black)),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          await Logout().logout(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.red,
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          child: const Text("Confirm", style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         ),
